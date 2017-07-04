@@ -13,6 +13,14 @@ import csv
 
 test = True
 
+def json_sort(opts):
+    from collections import OrderedDict as OD
+    skeys = ['serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
+             'rocket_material', 'rocket_fuel_mass', 'rocket_mass', 'fuel_type',
+             'nozzle_used', 'left_endpoint', 'right_endpoint',
+             'comments', 'data']
+    return OD(sorted(opts.iteritems(), key=lambda x: skeys.index(x[0])))
+
 options = set_options.get_opt_dict()
 date = datetime.datetime.now()
 date_folder = date.strftime('%y-%m-%d')
@@ -59,18 +67,17 @@ else:
             sys.stdout.write('\r' + line.strip() + '\t\t\t\t')
             sys.stdout.flush()
             pretty_line = line.split(',\t')
-            times.append(float(pretty_line[0]))
+            times.append(float(pretty_line[0]) / 1000.0)
             thrusts.append(float(pretty_line[1].strip()))
         except KeyboardInterrupt:
             break
 
 options['filename'] = fname
 options['date'] = date.strftime('%y-%m-%d-%H-%M-%S')
-options['data'] = {}
 options['data']['ms'] = times
 options['data']['thrusts'] = thrusts
 
-json.dump(options, open(file_path, 'w'))
+json.dump(json_sort(options), open(file_path, 'w'), indent=2)
 
 print '\nLogging complete.'
 print 'Analyze now? [y/n]'

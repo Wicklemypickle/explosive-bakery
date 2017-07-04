@@ -17,8 +17,17 @@ defaults = {
     'rocket_material': 'PVC',
     'fuel_type': 'Candy',
     'nozzle_used': True,
-    'comments': ''
+    'comments': '',
+    'data': {}
 }
+
+def json_sort(opts):
+    from collections import OrderedDict as OD
+    skeys = ['serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
+             'rocket_material', 'rocket_fuel_mass', 'rocket_mass', 'fuel_type',
+             'nozzle_used', 'left_endpoint', 'right_endpoint',
+             'comments', 'data']
+    return OD(sorted(opts.iteritems(), key=lambda x: skeys.index(x[0])))
 
 def str_prompt(string):
     try:
@@ -31,7 +40,7 @@ def numb_prompt(prompt, value):
     while True:
         try:
             inp = raw_input(prompt)
-            return int(inp)
+            return float(inp)
         except KeyboardInterrupt:
             print '\nExiting...'
             sys.exit(0)
@@ -130,7 +139,8 @@ if __name__ == '__main__':
             raise IOError
 
         opts = json.load(open(file_path, 'r'))
-        json.dump(get_opt_dict(options=opts), open(file_path, 'w'))
+        json.dump(json_sort(get_opt_dict(options=opts)),
+                  open(file_path, 'w'), indent=2)
     except IndexError:
         print 'Must be run with format:'
         print 'python set_options.py <file-name.json>'
