@@ -18,14 +18,15 @@ defaults = {
     'fuel_type': 'Candy',
     'nozzle_used': True,
     'comments': '',
+    'filename': '',
     'data': {}
 }
 
 def json_sort(opts):
     from collections import OrderedDict as OD
-    skeys = ['serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
+    skeys = ['date', 'serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
              'rocket_material', 'rocket_fuel_mass', 'rocket_mass', 'fuel_type',
-             'nozzle_used', 'left_endpoint', 'right_endpoint',
+             'nozzle_used', 'left_endpoint', 'right_endpoint', 'filename',
              'comments', 'data']
     return OD(sorted(opts.iteritems(), key=lambda x: skeys.index(x[0])))
 
