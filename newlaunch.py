@@ -15,9 +15,9 @@ test = False
 
 def json_sort(opts):
     from collections import OrderedDict as OD
-    skeys = ['date', 'serial_port', 'baud_rate', 'rocket_length',
-             'rocket_diameter', 'rocket_material', 'rocket_fuel_mass', 'rocket_mass',
-             'fuel_type', 'nozzle_used', 'left_endpoint', 'right_endpoint',
+    skeys = ['date', 'serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
+             'rocket_material', 'rocket_fuel_mass', 'rocket_mass', 'fuel_type',
+             'nozzle_used', 'left_endpoint', 'right_endpoint', 'filename',
              'comments', 'data']
     return OD(sorted(opts.iteritems(), key=lambda x: skeys.index(x[0])))
 
@@ -39,7 +39,6 @@ fname = trial_folder + '-data.json'
 file_path = '%s/%s' % (path, fname)
 try:
     raw_input('\nPress enter to begin logging, or <ctrl-c> to exit.\n')
-    os.mkdir(path)
 except KeyboardInterrupt:
     sys.exit(0)
 
@@ -70,7 +69,10 @@ else:
             times.append(float(pretty_line[0]) / 1000.0)
             thrusts.append(float(pretty_line[1].strip()))
         except KeyboardInterrupt:
+            ser.close()
             break
+
+os.mkdir(path)
 
 options['filename'] = fname
 options['date'] = date.strftime('%y-%m-%d-%H-%M-%S')
