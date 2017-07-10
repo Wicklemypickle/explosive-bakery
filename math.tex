@@ -55,6 +55,7 @@
     Velocity           & $v(t)$      & $m/s$                 & Velocity of rocket \\
     Acceleration       & $a(t)$      & $m/s^2$               & Acceleration of rocket \\
     Thrust             & $T(t)$      & $kg\cdot m/s^2$       & Thrust of rocket \\
+    Exhaust rate       & $v_e(t)$    & $m/s$                 & Fuel exhaust speed ($\approx $ speed of sound) \\
     Burn rate          & $B$         & $m/s$                 & Fuel burn rate (time, not energy) \\
     Gravity            & $g$         & $m/s^2$               & Gravity ($\approx 9.807$) \\
     Mass               & $m(t)$      & $kg$                  & Mass of rocket \\
@@ -72,7 +73,7 @@
     Air Pressure       & $p_a(h)$    & $kPa$                 & Pressure of atmosphere at height $h$ \\
     Lapse rate         & $L$         & $K/m$                 & Temperature lapse rate ($\approx 0.0065$) \\
     Ideal Gas Constant & $R$         & $J/\text{mol}\cdot K$ & Ideal Gas Constant \\
-    Air Molar Mass     & $M_m$       & $kg/\text{mol}$        & Dry air molar mass
+    Air Molar Mass     & $M_m$       & $kg/\text{mol}$       & Dry air molar mass
 \end{tabular}
 
 \section{Equation Derivations}
@@ -96,7 +97,7 @@ Drag coefficient equation (source: \href{https://en.wikipedia.org/wiki/Drag_(phy
 For air density, assumptions are: 1) Troposphere, 2) No humidity. From \href{https://en.wikipedia.org/wiki/Density_of_air#Altitude}{Wikipedia}, with $T_0 = 288.15$ and $p_0 = 101.325$:
 
 \begin{equation}
-T(h) = T_0 - Lh
+T_a(h) = T_0 - Lh
 \label{eq:air-temp}
 \end{equation}
 
@@ -106,7 +107,7 @@ p(h) = \rho_0\left(1-\frac{Lh(t)}{T_0}\right)^\frac{gM_m}{RL}
 \end{equation}
 
 \begin{equation}
-\rho_a(h) = \frac{p(h)M_m}{RT(h)}
+\rho_a(h) = \frac{p(h)M_m}{RT_a(h)}
 \label{eq:air-density}
 \end{equation}
 
