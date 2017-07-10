@@ -58,7 +58,7 @@
     Burn rate       & $B$         & $m/s$            & Fuel burn rate (time, not energy) \\
     Gravity         & $g$         & $m/s^2$          & Gravity ($\approx 9.807$) \\
     Mass            & $m(t)$      & $kg$             & Mass of rocket \\
-    Core Radius     & $R_c$       & $m$              & Initial radius of inner core (function of angle if not cylindrical core) \\
+    Core Radius     & $R_c$       & $m$              & Initial radius of inner core (function of angle if non-cylinder) \\
     Inner radius    & $r(t)$      & $m$              & Radius of core at given time \\
     Rocket Length   & $L$         & $m$              & Vertical length of rocket \\
     Rocket Radius   & $R$         & $m$              & Inner rocket radius (e.g. exclude PVC thickness) \\
@@ -71,13 +71,15 @@
 
 \section{Equations}
 \subsection{Velocity/Height}
-Governing equation:
+\subsubsection{Governing equation}
+Note: Currently just used $F=ma$, but since it‘s a mass varying system, need to integrate this equation: \hyperlink{’https://en.wikipedia.org/wiki/Variable-mass_system}{Variably-Mass System}. Shouldn’t be too much of an issue since we find $m(t)$ explicity below and the derivative is simple. It just adds another constant, exhaust rate, that we’ll need to figure out or approximate as the speed of sound.
 $$\sum F = T(t) - gm(t) - \gamma v^2 = m(t)a(t) = m(t)\dot{v}$$
 \begin{equation}
 \dot{v} = \frac{T(t)}{m(t)} - g - \frac{\gamma v^2}{m(t)}
 \label{eq:main}
 \end{equation}
 
+\subsubsection{Drag}
 Drag is proportional to $v^2$ for turbulent flows (is this turbulent or laminar..? not sure since high speed but moderately aerodynamic object). If it’s laminar, proportional to $v$.
 Drag coefficient equation (source: \href{https://en.wikipedia.org/wiki/Drag_(physics)#Types_of_drag}{Wikipedia}):
 \begin{equation}
@@ -85,17 +87,18 @@ Drag coefficient equation (source: \href{https://en.wikipedia.org/wiki/Drag_(phy
 \label{eq:gamma}
 \end{equation}
 
+\subsubsection{Gravity}
 Gravity (approximated for now to get rid of nonlinearities):
 $$g=\frac{GM_{\Earth}}{R_{\Earth} + h(t)} \approx 9.807$$
 
 \subsubsection{Mass}
-In a given moment, $2\pi r(t) H dr$ $m^3$ of fuel is being burned (assumptions: symmetric cylindrical burn).
+In a given moment, $2\pi r(t) H \cdot \rho_f dr$ ($kg$) of fuel is being burned (assumptions: symmetric cylindrical burn).
 
 Assuming the fuel burns outward at a constant rate:
 \begin{equation}
 r(t) = \begin{cases}
-Bt + r_c & t \le \frac{R - r_c}{B} \\
-r_c      & t > \frac{R - r_c}{B}
+Bt + R_c & t \le \frac{R - R_c}{B} \\
+R      & t > \frac{R - R_c}{B}
 \end{cases}
 \label{eq:inner-radius}
 \end{equation}
@@ -103,7 +106,8 @@ r_c      & t > \frac{R - r_c}{B}
 With this, the mass of the rocket is:
 
 \begin{equation}
-m(t) = M_0 - \int_0^t 2\pi (B\tau+r_c) H\,d\tau = M_0 - \pi H \left[2r_c t + Bt^2\right]
+m(t) = \begin{cases}M_0 - \int_0^t 2\pi (B\tau+R_c) H\cdot \rho_f\,d\tau = M_0 - \pi H \left[2R_c t + Bt^2\right] & 
+\end{cases}
 \label{eq:mass}
 \end{equation}
 \end{document}

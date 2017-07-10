@@ -26,9 +26,9 @@ SHOW_PLOT =         True
 
 def json_sort(opts):
     from collections import OrderedDict as OD
-    skeys = ['serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
+    skeys = ['date', 'serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
              'rocket_material', 'rocket_fuel_mass', 'rocket_mass', 'fuel_type',
-             'nozzle_used', 'left_endpoint', 'right_endpoint',
+             'nozzle_used', 'left_endpoint', 'right_endpoint', 'filename',
              'comments', 'data']
     return OD(sorted(opts.iteritems(), key=lambda x: skeys.index(x[0])))
 
@@ -182,6 +182,7 @@ if not num_data_points:
     sys.exit(0)
 else:
     smooth_thrust = savitzky_golay(thrust_vals, SG_WINDOW_SIZE, SG_ORDER)
+    print len(smooth_thrust)
 
 try:
     impulse = integrate(thrust_times,
@@ -196,7 +197,7 @@ print 'NUMBER OF DATA POINTS:\t%s' % (num_data_points)
 print 'MEASUREMENT FREQUENCY:\t%s hz' % (num_data_points/(float(thrust_times[-1]) - float(thrust_times[0])))
 print 'AVERAGE THRUST:\t\t%s g' % np.mean(thrust_vals)
 print 'MASS BURNED:\t\t%s g' % abs(thrust_vals[-1] - thrust_vals[0])
-print 'IMPULSE:\t\t%s g' % impulse
+print 'IMPULSE:\t\t%s g*s' % impulse
 
 ax = plt.axes()
 ax.plot(thrust_times, thrust_vals, color=(1,0,0,0.2), label='Original signal')
