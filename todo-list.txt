@@ -1,0 +1,9 @@
+- Parachutes
+- Arduinos
+    - Height, trajectory
+    - Pressure readings?
+- Space
+- Empirical burn rate
+    - Strand Burner or Ballistic Evaluation Motor (BEM).
+- Symmetric cylindrical burn
+- 
