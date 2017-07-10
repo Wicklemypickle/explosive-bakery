@@ -67,12 +67,13 @@
     Air Density     & $\rho_a(h)$ & $kg/m^3$         & Air density (decreases with height) \\
     Drag            & $C_d$       & None             & Drag coefficient (related to Reynold‘s number) \\
     Rocket Area     & $A$         & $m^2$            & Cross sectional area of rocket (for drag computation) \\
+    Burn End Time   & $t_e$       & $s$              & The time at which the burn ends
 \end{tabular}
 
-\section{Equations}
+\section{Equation Derivations}
 \subsection{Velocity/Height}
 \subsubsection{Governing equation}
-Note: Currently just used $F=ma$, but since it‘s a mass varying system, need to integrate this equation: \hyperlink{’https://en.wikipedia.org/wiki/Variable-mass_system}{Variably-Mass System}. Shouldn’t be too much of an issue since we find $m(t)$ explicity below and the derivative is simple. It just adds another constant, exhaust rate, that we’ll need to figure out or approximate as the speed of sound.
+Note: Currently just used $F=ma$, but since it‘s a mass varying system, need to integrate this equation: \hyperlink{’https://en.wikipedia.org/wiki/Variable-mass_system}{Mass Varying System}. Shouldn’t be too much of an issue since we find $m(t)$ explicity below and the derivative is simple. It just adds another constant, exhaust rate, that we’ll need to figure out or approximate as the speed of sound.
 $$\sum F = T(t) - gm(t) - \gamma v^2 = m(t)a(t) = m(t)\dot{v}$$
 \begin{equation}
 \dot{v} = \frac{T(t)}{m(t)} - g - \frac{\gamma v^2}{m(t)}
@@ -92,9 +93,9 @@ Gravity (approximated for now to get rid of nonlinearities):
 $$g=\frac{GM_{\Earth}}{R_{\Earth} + h(t)} \approx 9.807$$
 
 \subsubsection{Mass}
-In a given moment, $2\pi r(t) H \cdot \rho_f dr$ ($kg$) of fuel is being burned (assumptions: symmetric cylindrical burn).
+In a given moment, $2\pi r(t) H \cdot \rho_f dr$ ($kg$) of fuel is being burned (assumptions: symmetric cylindrical burn). 
 
-Assuming the fuel burns outward at a constant rate (it doesn‘t, it’s dependent on chamber pressure. Need to integrate these equations: \hyperlink{https://www.nakka-rocketry.net/burnrate.html}{Pressure related burn rate}. However, assuming it is linear:
+Assuming the fuel burns outward at a constant rate (it doesn‘t, it’s dependent on chamber pressure. Need to integrate these equations: \hyperlink{https://www.nakka-rocketry.net/burnrate.html}{Pressure related burn rate}: $\frac{dr}{dt}=B\implies dr=Bdt$, so $2\pi H \rho_f r(t)dt$ ($kg$) of fuel is burned.
 \begin{equation}
 r(t) = \begin{cases}
 Bt + R_c & t \le \frac{R - R_c}{B} \\
@@ -103,13 +104,33 @@ R      & t > \frac{R - R_c}{B}
 \label{eq:inner-radius}
 \end{equation}
 
-With this, the mass of the rocket is:
+Let $t_e = \frac{R-R_c}{B}$, when all the fuel has burned. With this, the mass of the rocket is:
 
 \begin{equation}
-m(t) = \begin{cases}M_0 - \int_0^t 2\pi (B\tau+R_c) H\cdot \rho_f\,d\tau = M_0 - \pi H \left[2R_c t + Bt^2\right] & 
+m(t) = \begin{cases}
+M_0 - \int_0^t 2\pi H \rho_f B (Bt+R_c)\,dt = M_0 - \pi H \rho_f B (Bt^2+2R_c t) & t \le t_e \\
+M_0 - \pi H \rho_f (R^2 - R_c^2)                                                 & t > t_e
 \end{cases}
 \label{eq:mass}
 \end{equation}
+\begin{equation}
+\dot{m} = \begin{cases}
+-2 \pi H \rho_f B (Bt + R_c) & t\le t_e \\
+0                            & t > t_e
+\end{cases}
+\label{eq:mdot}
+\end{equation}
+
+% \section{Summary}
+% \begin{tabular}{l l l}
+% \textbf{Variable}                & \textbf{Equation}                  & \textbf{Comments} \\
+% $t_e$                            & $\frac{R-R_c}{B}$                  & End time of symmetric cylindrical burn \\
+% $m$ for $t\le t_e$               & $M_0 - \pi H \rho [2R_c t + Bt^2]$ & Must use mass-variable system for this \\
+% $m$ for $t >  t_e$               & $M_0 - \pi H \rho \left(\frac{(R-R_c)^2}{B}+\frac{2 R_c (R-R_c)}{B}\right)$ & Final weight \\
+% $\dot{m}$ for $t \le t_e$        & $-2\pi H \rho [R_c + Bt]$          & Strictly negative \\
+% $\dot{m}$ for $t >   t_e$        & 0                                  & No mass change (burn has ended)
+% \end{tabular}
+
 \end{document}
 
 
