@@ -18,7 +18,8 @@ defaults = {
     'fuel_type': 'Candy',
     'nozzle_used': True,
     'comments': '',
-    'data': {}
+    'data': {},
+    'date': ''
 }
 
 def json_sort(opts):

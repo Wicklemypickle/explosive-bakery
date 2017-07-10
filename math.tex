@@ -1,0 +1,111 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{mathtools}
+\usepackage{fullpage,setspace}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{mathabx}
+\usepackage{float}
+\usepackage{framed}
+\usepackage{fancyhdr}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{verbatim}
+\usepackage{algorithmicx}
+\usepackage{mathrsfs}
+\usepackage{attachfile}
+\usepackage{multicol}
+\usepackage{titling}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{indentfirst} % indent first paragraph
+\usepackage{hyperref}    % table of content links
+\hypersetup{
+    colorlinks=true,
+    allcolors=black
+}
+\usepackage[top=.5in, bottom=1in, left=.5in, right=.5in]{geometry}
+
+\title{Rocket Math Stuff}
+\pretitle{\begin{center}\fontsize{20bp}{18bp}\selectfont}
+\posttitle{\par\end{center}}
+\predate{}
+\date{}
+%\author{Eli Berkowitz}
+\postdate{}
+
+\begin{document}
+
+\maketitle
+
+%\tableofcontents
+
+\section{Variables}
+
+
+\begin{tabular}{l | l | l | l}
+    \textbf{Variable} & \textbf{Symbol} & \textbf{Units} & \textbf{Description} \\
+    \hline
+    Height          & $h(t)$      & $m$              & Height off ground \\
+    Velocity        & $v(t)$      & $m/s$            & Velocity of rocket \\
+    Acceleration    & $a(t)$      & $m/s^2$          & Acceleration of rocket \\
+    Thrust          & $T(t)$      & $kg\cdot m/s^2$  & Thrust of rocket \\
+    Burn rate       & $B$         & $m/s$            & Fuel burn rate (time, not energy) \\
+    Gravity         & $g$         & $m/s^2$          & Gravity ($\approx 9.807$) \\
+    Mass            & $m(t)$      & $kg$             & Mass of rocket \\
+    Core Radius     & $R_c$       & $m$              & Initial radius of inner core (function of angle if not cylindrical core) \\
+    Inner radius    & $r(t)$      & $m$              & Radius of core at given time \\
+    Rocket Length   & $L$         & $m$              & Vertical length of rocket \\
+    Rocket Radius   & $R$         & $m$              & Inner rocket radius (e.g. exclude PVC thickness) \\
+    Outer Radius    & $R_o$       & $m$              & Outer rocket radius (measured from center to edge of PVC) \\
+    Fuel density    & $\rho_f$    & $kg/m^3$         & Fuel density \\
+    Air Density     & $\rho_a(h)$ & $kg/m^3$         & Air density (decreases with height) \\
+    Drag            & $C_d$       & None             & Drag coefficient (related to Reynold‘s number) \\
+    Rocket Area     & $A$         & $m^2$            & Cross sectional area of rocket (for drag computation) \\
+\end{tabular}
+
+\section{Equations}
+\subsection{Velocity/Height}
+Governing equation:
+$$\sum F = T(t) - gm(t) - \gamma v^2 = m(t)a(t) = m(t)\dot{v}$$
+\begin{equation}
+\dot{v} = \frac{T(t)}{m(t)} - g - \frac{\gamma v^2}{m(t)}
+\label{eq:main}
+\end{equation}
+
+Drag is proportional to $v^2$ for turbulent flows (is this turbulent or laminar..? not sure since high speed but moderately aerodynamic object). If it’s laminar, proportional to $v$.
+Drag coefficient equation (source: \href{https://en.wikipedia.org/wiki/Drag_(physics)#Types_of_drag}{Wikipedia}):
+\begin{equation}
+\gamma = \frac{1}{2}\rho_a C_d A = \frac{\pi}{2} C_d R_o^2\rho_a(h)
+\label{eq:gamma}
+\end{equation}
+
+Gravity (approximated for now to get rid of nonlinearities):
+$$g=\frac{GM_{\Earth}}{R_{\Earth} + h(t)} \approx 9.807$$
+
+\subsubsection{Mass}
+In a given moment, $2\pi r(t) H dr$ $m^3$ of fuel is being burned (assumptions: symmetric cylindrical burn).
+
+Assuming the fuel burns outward at a constant rate:
+\begin{equation}
+r(t) = \begin{cases}
+Bt + r_c & t \le \frac{R - r_c}{B} \\
+r_c      & t > \frac{R - r_c}{B}
+\end{cases}
+\label{eq:inner-radius}
+\end{equation}
+
+With this, the mass of the rocket is:
+
+\begin{equation}
+m(t) = M_0 - \int_0^t 2\pi (B\tau+r_c) H\,d\tau = M_0 - \pi H \left[2r_c t + Bt^2\right]
+\label{eq:mass}
+\end{equation}
+\end{document}
+
+

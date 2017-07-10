@@ -1,3 +1,11 @@
 *.pyc
 .DS_Store
 .git
+*.mp4
+*.aux
+*.log
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.png
