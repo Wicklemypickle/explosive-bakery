@@ -19,8 +19,8 @@ defaults = {
     'nozzle_used': True,
     'comments': '',
     'data': {},
-    'date': ''
-    'filename': '',
+    'date': '',
+    'filename': ''
 }
 
 def json_sort(opts):
@@ -133,6 +133,9 @@ def get_opt_dict(options=defaults):
             print 'Invalid input...'
 
     return options
+
+def get_defaults():
+    return defaults
 
 if __name__ == '__main__':
     try:

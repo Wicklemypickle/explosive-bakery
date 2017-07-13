@@ -10,30 +10,37 @@ import set_options
 import json
 import os
 import csv
+import argparse
 
 test = False
 
-def json_sort(opts):
-    from collections import OrderedDict as OD
-    skeys = ['date', 'serial_port', 'baud_rate', 'rocket_length', 'rocket_diameter',
-             'rocket_material', 'rocket_fuel_mass', 'rocket_mass', 'fuel_type',
-             'nozzle_used', 'left_endpoint', 'right_endpoint', 'filename',
-             'comments', 'data']
-    return OD(sorted(opts.iteritems(), key=lambda x: skeys.index(x[0])))
+# construct the argument parse and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-c", "--cli", action='store_true', default=False,
+    help='Use command line interface')
+ap.add_argument("-n", "--name", 
+    help='The name by which to save this test')
+args = vars(ap.parse_args())
 
-options = set_options.get_opt_dict()
+
+if args['cli']: options = set_options.get_opt_dict()
+else: options = set_options.get_defaults()
+
+# make a folder for today
 date = datetime.datetime.now()
 date_folder = date.strftime('%y-%m-%d')
 os.mkdir(date_folder) if not os.path.exists(date_folder) else None
 
+
+trial_folder = args['name']
 while True:
-    trial_folder = raw_input('Input trial name: ')
+    if trial_folder is None: trial_folder = raw_input('Input trial name: ')
     path = '%s/%s' % (date_folder, trial_folder)
     if not os.path.exists(path):
-        # os.mkdir(path)
         break
     else:
-        print 'Trial already exists.'
+        print 'Trial {} already exists.'.format(trial_folder)
+        trial_folder = None
 
 fname = trial_folder + '-data.json'
 file_path = '%s/%s' % (path, fname)
@@ -55,6 +62,7 @@ if test:
         print e
         sys.exit(1)
 else:
+    print '############         {}          ############'.format(trial_folder)
     ser = serial.Serial(options['serial_port'], options['baud_rate'])
     print ser.readline().strip()
     times = []
@@ -79,7 +87,7 @@ options['date'] = date.strftime('%y-%m-%d-%H-%M-%S')
 options['data']['ms'] = times
 options['data']['thrusts'] = thrusts
 
-json.dump(json_sort(options), open(file_path, 'w'), indent=2)
+json.dump(set_options.json_sort(options), open(file_path, 'w'), indent=2)
 
 print '\nLogging complete.'
 print 'Analyze now? [y/n]'
