@@ -11,8 +11,10 @@ import json
 import os
 import csv
 import argparse
+import numpy as np
 
 TEST_MODE = True
+IMPORT_CSV = True
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -26,21 +28,24 @@ ap.add_argument("-l", "--length", type=float,
     help='rocket length')
 ap.add_argument("-d", "--diameter", type=float,
     help='rocket diameter')
+ap.add_argument('--date', help='The date on which the test occured. YY-MM-DD.')
 args = vars(ap.parse_args())
 
-if args['cli']: options = set_options.get_opt_dict()
-else: 
-    options = set_options.get_defaults()
-    if args['nozzle'] is not None: options['nozzle_used'] = args['nozzle']
-    if args['diameter'] is not None: options['rocket_diameter'] = args['diameter']
-    if args['length'] is not None: options['rocket_length'] = args['length']
+# populate the test options JSON with cl args
+options = set_options.get_defaults()
+if args['nozzle'] is not None: options['nozzle_used'] = args['nozzle']
+if args['diameter'] is not None: options['rocket_diameter'] = args['diameter']
+if args['length'] is not None: options['rocket_length'] = args['length']
+
+# allow the use of the CLI if requested
+if args['cli']: options = set_options.get_opt_dict(options=options)
 
 # make a folder for today
 date = datetime.datetime.now()
-date_folder = date.strftime('%y-%m-%d')
+date_folder = date.strftime('%y-%m-%d') if args['date'] is None else args['date']
 new_date_folder_created = os.mkdir(date_folder) if not os.path.exists(date_folder) else False
 
-# check the validity of the entered folder name
+# ensure we have a valid subfolder name in which to store the test
 trial_folder = args['name']
 while True:
     if trial_folder is None: trial_folder = raw_input('Input trial name: ')
@@ -55,11 +60,12 @@ while True:
     else:
         print 'Trial {} already exists.'.format(trial_folder)
         trial_folder = None
-
 fname = trial_folder + '-data.json'
 file_path = '%s/%s' % (path, fname)
+
 try: raw_input('\nPress enter to begin logging, or <ctrl-c> to exit.\n')
 except KeyboardInterrupt:
+    os.rmdir(path) # if the user cancels the test, remove the test folder
     sys.exit(0)
 
 
@@ -82,27 +88,32 @@ if not TEST_MODE:
         except KeyboardInterrupt:
             ser.close()
             break
-else:
+elif IMPORT_CSV:
     times = []
     thrusts = []
-    file_name = raw_input('TEST MODE ENABLED. Enter a filename for the CSV: ')
+    file_name = raw_input('CSV CONVERT ENABLED. Enter a filename for the CSV: ')
     try:
-        input_file = open(file_name, "r")
+        input_file = open(file_name.strip(), "r")
         for line in csv.reader(input_file):
             times.append(float(line[0])/1000.0)
             thrusts.append(float(line[1]))
     except IOError as e: 
         print e
         sys.exit(1)
+else:
+    print 'Spoofing some test data for ya! ;)'
+    times = np.array(range(1,100)) * 11.0
+    thrusts = np.random.random(100) * 100.0
 
-
+# add the test results to the JSON
 options['filename'] = fname
 options['date'] = date.strftime('%y-%m-%d-%H-%M-%S')
 options['data']['ms'] = times
 options['data']['thrusts'] = thrusts
-
+# and organize the JSON
 json.dump(set_options.json_sort(options), open(file_path, 'w'), indent=2)
 
+# perform analysis if requested
 print '\nLogging complete.'
 print 'Analyze now? [y/n]'
 if raw_input('> ') == 'y':
